@@ -727,7 +727,7 @@ Resources:
             # Reference: https://api.cloudflare.com/#dns-records-for-a-zone-update-dns-record
             a:
               command: !Sub |
-                curl -X POST "https://api.cloudflare.com/client/v4/zones/${CFzoneid}/dns_records" -H "X-Auth-Email: ${CFemail}" -H "X-Auth-Key: `aws ssm get-parameters --region ${AWS::Region} --names ${SSMCFAuthSecret} --with-decryption --output text | cut -f4`" -H "Content-Type: application/json" --data '{"type":"A","name":"${OpenVPNASDNSName}","content":"${EIP}","ttl":120,"proxied":false}'
+                curl -X POST "https://api.cloudflare.com/client/v4/zones/${CFzoneid}/dns_records" -H "X-Auth-Email: ${CFemail}" -H "X-Auth-Key: `aws ssm get-parameters --region ${AWS::Region} --names ${SSMCFAuthSecret} --with-decryption --output text | cut -f4`" -H "Content-Type: application/json" --data '{"type":"A","name":"${OpenVPNASDNSName}","content":"${EIP}","ttl":120,"proxied":True}'
             b:
               command: "wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb"
               cwd: "/tmp"
