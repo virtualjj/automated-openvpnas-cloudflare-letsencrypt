@@ -1,9 +1,7 @@
 
 # AWS OPENVPN AS (ACCESS SERVER) WITH AUTOMATED LET'S ENCRYPT ON CLOUDFLARE
 
----
-**August 9th, 2017 UPDATE:** This project is currently in progress and not finished. I'm testing having the AWS Elastic IP and Cloudflare A record automatically added to Cloudflare by either using AWS Lambda or CURL&mdash;both using the [Cloudflare API](https://api.cloudflare.com/#dns-records-for-a-zone-create-dns-record). The AWS Lambda will use Python and the [Cloudflare module](https://blog.cloudflare.com/python-cloudflare/) which is a wrapper for the Cloudflare API. It's rather trivial to do this with AWS Route 53 so might add functionality in the template to choose either Route 53 or Cloudflare -OR- keep the template completely separate. 
----
+**August 9th, 2017 UPDATE:** This project is currently in progress and not finished. I'm testing having the AWS Elastic IP and Cloudflare A record automatically added to Cloudflare by either using AWS Lambda or CURL&mdash;both using the [Cloudflare API](https://api.cloudflare.com/#dns-records-for-a-zone-create-dns-record). The AWS Lambda will use Python and the [Cloudflare module](https://blog.cloudflare.com/python-cloudflare/) which is a wrapper for the Cloudflare API. It's rather trivial to do this with AWS Route 53 so might add functionality in the template to choose either Route 53 or Cloudflare -OR- keep the template completely separate.
 
 - [PURPOSE](#purpose)
 - [SUPPORTED REGIONS](#supported-regions)
