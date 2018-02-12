@@ -83,8 +83,37 @@ Enter a source IP address for connecting to the OpenVPN AS web UI. You can leave
 Enter a unique username for the web UI administrator account and a reference to the other SSM secure string for the secure password.
 
 Click **Next** and follow the prompts to deploy the stack.
+
 <p align="center">
 <img src="https://github.com/virtualjj/automated-openvpnas-cloudflare-letsencrypt/blob/master/images/readme/deploy-lock-ip-secure-string-passwd.jpg" alt="Enter a source IP for connecting to the OpenVPN AS web UI and choose a unique username as well as a SSM secure string for the admin password."="75%" width="75%">
 </p>
 
 The stack, instance, CloudFlare DNS update, and Let's Encrypt certificate should be complete in about five minutes.
+
+<p align="center">
+<img src="https://github.com/virtualjj/automated-openvpnas-cloudflare-letsencrypt/blob/master/images/readme/deploy-success-outputs-url.jpg" alt="Successful stack deployment. Find the web UI URL in the Outputs section."="75%" width="75%">
+</p>
+
+If you look in your CloudFlare DNS panel, you should see a new A record added. Note that the CloudFlare icon is grey and not orange. This means that CloudFlare is only providing DNS services and not DDoS and other protections.
+
+<p align="center">
+<img src="https://github.com/virtualjj/automated-openvpnas-cloudflare-letsencrypt/blob/master/images/readme/deploy-new-a-record-cloudflare.jpg" alt="New A record in CloudFlare after stack deployment."="75%" width="75%">
+</p>
+
+Click on the URL listed in the CloudFormation Outputs section. Your OpenVPN AS should have a Let's Encrypt certificate installed and working now:
+
+<p align="center">
+<img src="https://github.com/virtualjj/automated-openvpnas-cloudflare-letsencrypt/blob/master/images/readme/deploy-le-certificate-sample.jpg" alt="Newly applied Let's Encrypt certificate on OpenVPN AS"="75%" width="75%">
+</p>
+
+When you login, make sure to enter the actual password that you set in the SSM secure string. At this point, the OpenVPN AS web UI doesn't know anything about the SSM secure string parameter.
+
+<p align="center">
+<img src="https://github.com/virtualjj/automated-openvpnas-cloudflare-letsencrypt/blob/master/images/readme/deploy-first-time-login-screen.jpg" alt="Login to OpenVPN AS with password, not SSM secure string ID"="75%" width="75%">
+</p>
+
+After successful login you'll have to agree to the EULA and then the status screen should appear. You can now configure your OpenVPN AS for use.
+
+<p align="center">
+<img src="https://github.com/virtualjj/automated-openvpnas-cloudflare-letsencrypt/blob/master/images/readme/deploy-login-success-status-screen.jpg" alt="Successful login to OpenVPN AS"="75%" width="75%">
+</p>
