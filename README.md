@@ -63,3 +63,24 @@ Make sure that you are in the same region that you created your SSM secure sting
 
 [![Launch CloudFormation Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png
 )](https://console.aws.amazon.com/cloudformation/home#/stacks/new?stackName=openvpnas-cf-letsencrypt&templateURL=https://s3-us-west-2.amazonaws.com/github-automated-openvpnas-cloudflare-letsencrypt/automated-openvpnas-cloudflare-letsencrypt.yml)
+
+
+<p align="center">
+<img src="https://github.com/virtualjj/automated-openvpnas-cloudflare-letsencrypt/blob/master/images/readme/deploy-enter-ssm-params-cf-email.jpg" alt="Enter SSM secure string parameters and CloudFlare account email." height="75%" width="75%">
+</p>
+
+Enter an email address for the Let's Encrypt certificate registration. Try to use a different email address instead of your CloudFlare address.
+
+Make sure to enter the correct FQDN&hellip;this will be the name of your OpenVPN server and URL that you'll use to connect to.
+
+<p align="center">
+<img src="https://github.com/virtualjj/automated-openvpnas-cloudflare-letsencrypt/blob/master/images/readme/deploy-email-fqdn-ec2key.jpg" alt="Enter Let's Encrypt email and FQDN" height="75%" width="75%">
+</p>
+
+Enter a source IP address for connecting to the OpenVPN AS web UI. You can leave it open to the world (i.e. 0.0.0.0/0) but we won't be using CloudFlare to protect this URL yet.
+
+Enter a unique username for the web UI administrator account and a reference to the other SSM secure string for the secure password.
+
+<p align="center">
+<img src="https://github.com/virtualjj/automated-openvpnas-cloudflare-letsencrypt/blob/master/images/readme/deploy-lock-ip-secure-string-passwd.jpg" alt="Enter a source IP for connecting to the OpenVPN AS web UI and choose a unique username as well as a SSM secure string for the admin password."="75%" width="75%">
+</p>
