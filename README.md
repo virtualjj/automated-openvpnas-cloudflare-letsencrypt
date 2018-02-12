@@ -27,6 +27,8 @@ Though I've tried to standardize as much as possible, this template will not mee
 
 While it's cool that you can deploy a Let's Encrypt TLS certificate for free, this does not equate to more or better security. This project is the result of a question - can I automate the deployment of OpenVPN AS and Let's Encrypt with CloudFlare? Steps have been taken to improve security by integrating EC2 SSM for secrets management for example, but if you require strong security in an hostile environment, this project is not for you.
 
+Ideally, we'd use CloudFlare to protect the web admin UI since it is not possible to turn on MFA like you can on regular user accounts. Currently, after whitelisting the CloudFlare IPs, turning on CloudFlare protection breaks the web admin UI login. From a security perspective however, port 1194 UDP is open for the openvpn connections and cannot be proxied through CloudFlare anyway so the benefit of having CloudFlare protection is debatable. Using security groups to lock access from a source IP to the web admin UI *and* using a strong and unique username/password combination should be enough to mitigate most bots trying access the web admin console. VPC Flow Logging is enabled so feel free to see what is trying to access your OpenVPN AS instance.
+
 ## PREREQUISITES
 
 Hopefully this is obvious but you'll need an AWS account and a CloudFlare account setup to manage DNS for your domain name to follow the steps in this README.md
