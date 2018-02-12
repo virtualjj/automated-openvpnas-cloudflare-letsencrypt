@@ -39,20 +39,20 @@ In AWS, setup the following secure strings in AWS SSM Parameter store:
 * CloudFlare Zone ID for the target domain
 * Password for the OpenVPN AS Web Admin UI administrator user
 
-Here is how you would create one:
+Make sure to select **Secure String** when you create one:
 <p align="center">
-<img src="https://github.com/virtualjj/automated-openvpnas-cloudflare-letsencrypt/blob/master/images/readme/prep-create-ssm-secure-string.jpg" alt="Creating an EC2 SSM secure string example." height="75%" width="75%">
+<img src="https://github.com/virtualjj/automated-openvpnas-cloudflare-letsencrypt/blob/master/images/readme/prep-creating-secure-string.jpg" alt="Creating an EC2 SSM secure string example." height="75%" width="75%">
 </p>
 
 When you are done, you should have something similar to the screenshot below:
 <p align="center">
-<img src="https://github.com/virtualjj/automated-openvpnas-cloudflare-letsencrypt/blob/master/images/readme/prep-ssm-secure-strings-sample.jpg" alt="Sample AWS EC2 SSM secure strings." height="75%" width="75%">
+<img src="https://github.com/virtualjj/automated-openvpnas-cloudflare-letsencrypt/blob/master/images/readme/prep-final-secure-strings-sample.jpg" alt="Sample AWS EC2 SSM secure strings." height="75%" width="75%">
 </p>
 
 Also, make sure you don't have any A records in your CloudFlare DNS that might conflict. This tutorial assumes a domain with no other DNS records:
 
 <p align="center">
-<img src="https://github.com/virtualjj/automated-openvpnas-cloudflare-letsencrypt/blob/master/images/readme/prep-cloudflare-dns-no-records.jpg" alt="CloudFlare DNS with no records example." height="75%" width="75%">
+<img src="https://github.com/virtualjj/automated-openvpnas-cloudflare-letsencrypt/blob/master/images/readme/prep-cf-no-records-sample.jpg" alt="CloudFlare DNS with no records example." height="75%" width="75%">
 </p>
 
 ## DEPLOYMENT STEPS
