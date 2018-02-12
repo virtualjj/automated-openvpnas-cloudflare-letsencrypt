@@ -16,11 +16,15 @@ Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
     - Label:
-        default: CLOUDFLARE & DNS
+        default: CLOUDFLARE
       Parameters: 
-      - CFzoneid
+      - SSMCFzoneid
       - SSMCFAuthSecret
       - CFemail
+    - Label:
+        default: LET'S ENCRYPT
+      Parameters: 
+      - LetsEncryptEmail
     - Label:
         default: VPC NETWORKING
       Parameters:
@@ -35,73 +39,79 @@ Metadata:
       - OpenVPNASDNSName
       - InstanceSize
       - KeyName
-      - OpenUse
     - Label:
         default: SECURITY & MONITORING
       Parameters:
       - OpenVPNASAccessIP
+      - OpenUse
       - OpenVPNASAdminUser
       - SSMOpenVPNASAdminSecret
       - VPCFlowLogRetention
     ParameterLabels:
-      CFzoneid:
+      SSMCFzoneid:
         default: DNS Zone ID
       SSMCFAuthSecret:
         default: Global API Key
       CFemail:
         default: CloudFlare Email
+      LetsEncryptEmail:
+        default: Let's Encrypt Email
       VPCCIDR:
         default: Custom VPC CIDR
       TagPrefixer:
         default: Custom Resource Tag
+      OpenVPNASDNSName:
+        default: Public FQDN
       InstanceSize:
         default: Instance Size
       KeyName:
         default: EC2 Key Pair
+      OpenVPNASAccessIP:
+        default: Web Admin UI IP
       OpenUse:
         default: Open VPN Access
-      OpenVPNASDNSName:
-        default: Public FQDN
-      OpenVPNASAccessIP:
-        default: OpenVPN AS Management IP
       OpenVPNASAdminUser:
-        default: OpenVPN AS Admin Username
+        default: Web Admin Administrator Username
       SSMOpenVPNASAdminSecret:
-        default: AWS Parameter Store Name (OpenVPN AS Admin Password)
+        default: Web Admin Administrator Password
       VPCFlowLogRetention:
         default: VPC Flow Log Retention.
 # Help for CloudFormation Parameters
 # http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html
 Parameters:
-  CFzoneid:
-    Description: Enter your CloudFlare Zone ID. You can find it in Overview --> Domain Summary
+  SSMCFzoneid:
+    Description: EC2 SSM Secure String Parameter Store name that references your CloudFlare Zone ID.
     Type: String
     Default: REQUIRED 
   SSMCFAuthSecret:
-    Description: Enter the Parameter Store (Secure String) name that references your CloudFlare global API key. DO NOT paste the actual key here!!!
+    Description: EC2 SSM Secure String Parameter Store name that references your CloudFlare Global API key.
     Type: String
     Default: REQUIRED
   CFemail: 
-    Description: Enter your CloudFlare account email address. You can find it in  My Account Settings --> Email Address
+    Description: Enter your registered CloudFlare account email address. You can find it in  My Account Settings --> Email Address
+    Type: String
+    Default: REQUIRED
+  LetsEncryptEmail:
+    Description: Enter an email address for your Let's Encrypt certificate.
     Type: String
     Default: REQUIRED
   VPCCIDR:
-    Description: Enter a custom CIDR for your OpenVPN AS VPC using the first two octets. (eg. 10.10.)
+    Description: Enter a custom CIDR for your OpenVPN AS VPC using the first two octets.
     Type: String
     Default: 10.10.
     AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\."
     ConstraintDescription: 'Choose the first two octets of a CIDR. i.e. 10.10.'
   TagPrefixer:
-    Description: Enter your own tag prefix to help identify resources created by this stack. (eg. TEST-)
+    Description: Enter your own tag prefix to help identify resources created by this stack.
     Type: String
-    Default: TEST-
+    Default: LE-OPENVPNAS-
     # Generally allowed characters for AWS TAGs are: letters, spaces, and numbers representable in UTF-8, plus the following special characters: + - = . _ : / @. (Ref: http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Using_Tags.html)
     # [\.\-_/#A-Za-z0-9]+ Required for AWS::Logs::LogGroup
     AllowedPattern: "[\\w\\-\\/\\.]*"
   OpenVPNASDNSName:
-    Description: Enter the public FQDN for the OpenVPN AS instance and the certificate that Let's Encrypt will sign and generate.
+    Description: Enter the public FQDN for the OpenVPN AS instance and Let's Encrypt certificate.
     Type: String
-    Default: vpn.yourdomain.com
+    Default: yourdomain.com
     # Jesus REGEX can be a pain in the rear. http://rubular.com/ is a good resource if you get stuck. 
     # Helpful but usually not reference for REGEX in CloudFormation templates: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-regexes.html
     AllowedPattern: "^([a-z0-9]|[a-z0-9][a-z0-9\\-]{0,61}[a-z0-9])(\\.([a-z0-9]|[a-z0-9][a-z0-9\\-]{0,61}[a-z0-9]))*$"
@@ -136,67 +146,38 @@ Parameters:
     - c3.2xlarge
     - c3.4xlarge
     - c3.8xlarge
-    - g2.2xlarge
-    - g2.8xlarge
-    - p2.xlarge
-    - p2.8xlarge
-    - p2.16xlarge
-    - r4.large
-    - r4.xlarge
-    - r4.2xlarge
-    - r4.4xlarge
-    - r4.8xlarge
-    - r4.16xlarge
-    - r3.large
-    - r3.xlarge
-    - r3.2xlarge
-    - r3.4xlarge
-    - r3.8xlarge
-    - d2.xlarge
-    - d2.2xlarge
-    - d2.4xlarge
-    - d2.8xlarge
-    - i2.xlarge
-    - i2.2xlarge
-    - i2.4xlarge
-    - i2.8xlarge
-    - i3.large
-    - i3.xlarge
-    - i3.2xlarge
-    - i3.4xlarge
-    - i3.8xlarge
   KeyName:
     Description: REQUIRED - Select an EXISTING EC2 key pair to launch this OpenVPN AS instance.
     Type: AWS::EC2::KeyPair::KeyName
-    ConstraintDescription: You must choose the name of an existing EC2 KeyPair
-  OpenUse:
-    Description: If you have endpoints that receive public IPs via DHCP or are mobile devices choose 'YES' for this. Note that this is for VPN access (i.e. UDP 1194) only, not the web admin portal.
-    Default: 'NO'
-    Type: String
-    AllowedValues:
-    - 'YES'
-    - 'NO'
-    ConstraintDescription: You must specify YES or NO. 
+    ConstraintDescription: You must choose the name of an existing EC2 KeyPair 
   OpenVPNASAccessIP:
-    Description: Enter the source IP address that will be used to access administrator web console. Use http://ipchicken.com to confirm. CAUTION - use 0.0.0.0/0 at your own peril.
+    Description: Enter the source IP address that will be used to access the Web Admin UI. Use 0.0.0.0/0 to open to the world (Not Recommended).
     Type: String
     MinLength: 9
     MaxLength: 18
     Default : 0.0.0.0/32
     AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})(/32|/0)"
     ConstraintDescription: Must be a valid CIDR range of the form x.x.x.x/x
+  OpenUse:
+    Description: Select 'YES' to open up 1194 to 0.0.0.0/0. 'NO' defaults to the admin web console source IP entered above.
+    Default: 'NO'
+    Type: String
+    AllowedValues:
+    - 'YES'
+    - 'NO'
+    ConstraintDescription: You must specify YES or NO.
   OpenVPNASAdminUser:
     Description: Minimum of 4 characters. Avoid using the default 'openvpnas' username.
     Type: String
     MinLength: 4
     MaxLength: 50
-    Default: ChangeMeOrSuffer
+    Default: ChangeOrBePwned
     AllowedPattern: "([A-Za-z0-9-]*)"
     ConstraintDescription: Name must only contain alphanumeric characters between 4 and 50 characters.
   SSMOpenVPNASAdminSecret:
-    Description: OPTIONAL - Enter the name of your AWS Parameter Store secret string for the web admin password. Otherwise the default login will be 'ChangeMePlease' so make sure to change the password after logging into the Web Admin console.
+    Description: EC2 SSM Secure String Parameter Store name that references your OpenVPN AS Web Admin Administrator Password.
     Type: String
-    Default: ChangeMePlease
+    Default: ChangeOrBePwned
   VPCFlowLogRetention:
     # Information source: Ref: http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/flow-logs.html#flow-log-records
     Description: Select the number of days to retain VPC Flow Logs.
@@ -482,6 +463,11 @@ Resources:
     Properties:
       # Group names can only have these characters: a-zA-Z0-9. _-:/()#,@[]+=&;{}!$*
       GroupDescription: Lets Encrypt Authorization
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: '80'
+        ToPort: '80'
+        CidrIp: 0.0.0.0/0
       Tags:
       - Key: Name
         Value:
@@ -610,19 +596,6 @@ Resources:
       Protocol: 6
       RuleAction : allow
       RuleNumber : 140
-  InboundICMPPublicRepliesNACL:
-    Type: "AWS::EC2::NetworkAclEntry"
-    Properties: 
-      CidrBlock: 0.0.0.0/0
-      Egress: false
-      NetworkAclId:
-        Ref: PublicNetworkAcl
-      PortRange:
-        From: '8'
-        To: '0'
-      Protocol: -1
-      RuleAction : allow
-      RuleNumber : 150
   OutboundPublicSSHNACL:
     Type: "AWS::EC2::NetworkAclEntry"
     Properties: 
@@ -690,21 +663,6 @@ Resources:
       Protocol: 6
       RuleAction : allow
       RuleNumber : 140
-  PublicICMPOutboundRepliesNACL:
-    Type: "AWS::EC2::NetworkAclEntry"
-    Properties: 
-      CidrBlock: 0.0.0.0/0
-      Egress: true
-      NetworkAclId:
-        Ref: PublicNetworkAcl
-      PortRange:
-        # Need this for Let's Encrypt - ping to get IP address.
-        # Reference: https://www.iana.org/assignments/icmp-parameters/icmp-parameters.xhtml#icmp-parameters-codes-8
-        From: '8'
-        To: '0'
-      Protocol: -1
-      RuleAction : allow
-      RuleNumber : 150
   PublicNetworkAclAssociation:
     Type: AWS::EC2::SubnetNetworkAclAssociation
     Properties:
@@ -726,8 +684,9 @@ Resources:
             # This is CloudFlare's API command to update DNS. The line below adds a record.
             # Reference: https://api.cloudflare.com/#dns-records-for-a-zone-update-dns-record
             a:
+              # Probably could have used ENV: for this but too much escaping so did it inline. 
               command: !Sub |
-                curl -X POST "https://api.cloudflare.com/client/v4/zones/${CFzoneid}/dns_records" -H "X-Auth-Email: ${CFemail}" -H "X-Auth-Key: `aws ssm get-parameters --region ${AWS::Region} --names ${SSMCFAuthSecret} --with-decryption --output text | cut -f4`" -H "Content-Type: application/json" --data '{"type":"A","name":"${OpenVPNASDNSName}","content":"${EIP}","ttl":120,"proxied":True}'
+                curl -X POST "https://api.cloudflare.com/client/v4/zones/`aws ssm get-parameters --region ${AWS::Region} --names ${SSMCFzoneid} --with-decryption --output text | cut -f4`/dns_records" -H "X-Auth-Email: ${CFemail}" -H "X-Auth-Key: `aws ssm get-parameters --region ${AWS::Region} --names ${SSMCFAuthSecret} --with-decryption --output text | cut -f4`" -H "Content-Type: application/json" --data '{"type":"A","name":"${OpenVPNASDNSName}","content":"${EIP}","ttl":120,"proxied":False}'
             b:
               command: "wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb"
               cwd: "/tmp"
@@ -794,8 +753,8 @@ Resources:
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
-          apt -y update && apt -y upgrade
-          apt-get -y install python-pip
+          apt -y update
+          apt -y install python-pip
           pip install awscli
           public_hostname=${OpenVPNASDNSName}
           admin_user=${OpenVPNASAdminUser}
@@ -804,41 +763,12 @@ Resources:
           reroute_dns=1
           pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
           cfn-init -v --stack ${AWS::StackName} --resource OpenVPNASInstance --region ${AWS::Region}
-          #
-          # Setup Let's Encrypt
-          #
-          # First need to try and get the Let's Encrypt IPs. From looking at error logs, these two are what I found.
-          letsencryptout1=$(dig +short outbound1.letsencrypt.org)'/32'
-          aws --region ${AWS::Region} ec2 authorize-security-group-ingress --group-id ${LetEncryptSG} --protocol tcp --port 443 --cidr $letsencryptout1
-          letsencryptout2=$(dig +short outbound2.letsencrypt.org)'/32'
-          aws --region ${AWS::Region} ec2 authorize-security-group-ingress --group-id Ref: ${LetEncryptSG} --protocol tcp --port 443 --cidr $letsencryptout2
-          #
-          add-apt-repository ppa:certbot/certbot -y
-          # This bc already installed in AMI but leaving in to keep consistent with Let
-          apt-get -y install git bc
-          git clone https://github.com/letsencrypt/letsencrypt /opt/letsencrypt
-          #
-          # Let's Encrypt configuration file with settings.
-          mkdir /etc/letsencrypt
-          echo "rsa-key = 4096" >> /etc/letsencrypt/vpn.server.com.ini
-          echo "email = ${CFemail}" >> /etc/letsencrypt/vpn.server.com.ini
-          echo "domains = ${OpenVPNASDNSName}" >> /etc/letsencrypt/vpn.server.com.ini
-          echo "authenticator = standalone" >> /etc/letsencrypt/vpn.server.com.ini
-          echo "standalone-supported-challenges = tls-sni-01" >> /etc/letsencrypt/vpn.server.com.ini
-          echo "agree-tos = True" >> /etc/letsencrypt/vpn.server.com.ini
-          echo "keep-until-expiring = True" >> /etc/letsencrypt/vpn.server.com.ini
-          # This needs to be installed AFTER the vpn.server.com.ini file is created.
-          apt-get install certbot -y
-          #
-          # Need to make sure SG isn't blocking connections from Let's Encrypt! (i.e. current template locks down to your source IP)
-          echo "set -eu" >> letsencrypt-renew.sh
-          echo "/usr/local/openvpn_as/scripts/sacli stop" >> letsencrypt-renew.sh
-          echo "/opt/letsencrypt/letsencrypt-auto -n certonly -c /etc/letsencrypt/vpn.server.com.ini" >> letsencrypt-renew.sh
-          echo "/usr/local/openvpn_as/scripts/sacli start" >> letsencrypt-renew.sh
-          chmod +x letsencrypt-renew.sh && ./letsencrypt-renew.sh
-          #
-          # These lines copy the Let's encrypt certificates to the OpenVPN AS database.
-          # Reference: 
+
+          add-apt-repository -y ppa:certbot/certbot
+          apt -y update
+          apt -y install certbot 
+          certbot certonly --standalone --non-interactive --agree-tos --email ${CFemail} --domains ${OpenVPNASDNSName} --pre-hook 'sudo service openvpnas stop' --post-hook 'sudo service openvpnas start'
+
           /usr/local/openvpn_as/scripts/sacli stop
           /usr/local/openvpn_as/scripts/confdba -mk cs.ca_bundle -v "`cat /etc/letsencrypt/live/${OpenVPNASDNSName}/fullchain.pem`"
           /usr/local/openvpn_as/scripts/confdba -mk cs.priv_key -v "`cat /etc/letsencrypt/live/${OpenVPNASDNSName}/privkey.pem`" > /dev/null
