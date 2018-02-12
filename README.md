@@ -49,8 +49,6 @@ When you are done, you should have something similar to the screenshot below:
 <img src="https://github.com/virtualjj/automated-openvpnas-cloudflare-letsencrypt/blob/master/images/readme/prep-ssm-secure-strings-sample.jpg" alt="Sample AWS EC2 SSM secure strings." height="75%" width="75%">
 </p>
 
-![image](https://user-images.githubusercontent.com/10323889/36089453-5c375a62-101f-11e8-8b0f-42814cd6da33.png)
-
 Also, make sure you don't have any A records in your CloudFlare DNS that might conflict. This tutorial assumes a domain with no other DNS records:
 
 <p align="center">
