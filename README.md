@@ -1,24 +1,48 @@
 
-# AWS OPENVPN AS (ACCESS SERVER) WITH AUTOMATED LET'S ENCRYPT ON CLOUDFLARE
+# AWS OPENVPN AS (ACCESS SERVER) WITH AUTOMATED LET'S ENCRYPT ON CLOUDFLARE DNS
 
-**August 9th, 2017 UPDATE:** This project is currently in progress and not finished. I'm testing having the AWS Elastic IP and Cloudflare A record automatically added to Cloudflare by either using AWS Lambda or CURL&mdash;both using the [Cloudflare API](https://api.cloudflare.com/#dns-records-for-a-zone-create-dns-record). The AWS Lambda will use Python and the [Cloudflare module](https://blog.cloudflare.com/python-cloudflare/) which is a wrapper for the Cloudflare API. It's rather trivial to do this with AWS Route 53 so might add functionality in the template to choose either Route 53 or Cloudflare -OR- keep the template completely separate.
+This project automates the setup of an OpenVPN AS (Access Server) Community Edition on AWS with a Let's Encrypt certificate using CloudFlare DNS.
 
 - [PURPOSE](#purpose)
 - [SUPPORTED REGIONS](#supported-regions)
+- [HOW TO CONTRIBUTE](#how-to-contribute)
 - [CAVEATS](#caveats)
+- [PREREQUISITES](#prerequisites)
+- [DEPLOYMENT STEPS](#deployment-steps)
+
 
 ## PURPOSE
 
-This project automates the deployment of an OpenVPN AS Community Edition AWS instance with a [Let's Encrypt](https://letsencrypt.org/) certificate in conjunction with [Cloudflare](https://www.cloudflare.com/). In order for Let's Encrypt to issue an TLS certificate an active FQDN needs to be ***pre-configured*** which is a bit of a challenge when automating with CloudFormation because you won't know the EIP (Elastic IP) address until the resource is created.
+This project automates the deployment of an OpenVPN AS Community Edition AWS instance with a [Let's Encrypt](https://letsencrypt.org/) certificate in conjunction with [Cloudflare](https://www.cloudflare.com/) DNS. Accomplishing this task with AWS Route 53 is trivial; CloudFlare on the other hand requires some extra leg work and seemed like an interesting project.
 
 ## SUPPORTED REGIONS
 
-All regions listed in the [Amazon Web Services EC2 Community Appliance Quick Start Guide](https://docs.openvpn.net/how-to-tutorialsguides/virtual-platforms/amazon-ec2-appliance-ami-quick-start-guide/) are supported.
+All regions listed in the [Amazon Web Services EC2 Community Appliance Quick Start Guide](https://docs.openvpn.net/how-to-tutorialsguides/amazon-ec2-appliance-ami-quick-start-guide/) are supported.
+
+## HOW TO CONTRIBUTE
+
+Though I've tried to standardize as much as possible, this template will not meet everyones' requirements. I'm happy to receive suggestions and pull requests but please don't do a drive by, lobbing a bunch of issues for your special, unique use case. At the very least, please make sure you have read all of the documentation before raising issues. 
 
 ## CAVEATS
 
-While it's cool that you can deploy a Let's Encrypt TLS certificate for free this does not equate to more security. If anything it increases the attack surface but I digress. I do find it amazing that most folks won't blink an eye to pay for an $8 beer (or two, or three, or four, etc.) but will scoff at paying $8 for a one-year TLS certificate. With that said, combining Let's Encrypt with CloudFlare *is* interesting and could be considered a possible mitigation for the limitations of Let's Encrypt.
+While it's cool that you can deploy a Let's Encrypt TLS certificate for free, this does not equate to more or better security. This project is the result of a question - can I automate the deployment of OpenVPN AS and Let's Encrypt with CloudFlare? Steps have been taken to improve security by integrating EC2 SSM for secrets management for example, but if you require strong security in an hostile environment, this project is not for you.
 
-Finally, we could of course use Route 53 in place of CloudFlare but Route 53 is not *free* and does not include all of the additional *free* security perks of CloudFlare. However, this template could provide a nice basis for developing a Route 53 Let's Encrypt deployment.
+## PREREQUISITES
 
-More to come...
+Hopefully this is obvious but you'll need an AWS account and a CloudFlare account setup to manage DNS for your domain name to follow the steps in this README.md
+
+## PREPARATION
+
+In AWS, setup the following secure strings in AWS SSM Parameter store:
+
+* CloudFlare Global API Key
+* CloudFlare Zone ID for the target domain
+* Password for the OpenVPN AS Web Admin UI administrator user
+
+## DEPLOYMENT STEPS
+
+
+
+
+
+
