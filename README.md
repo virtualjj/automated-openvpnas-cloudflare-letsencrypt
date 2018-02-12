@@ -56,3 +56,10 @@ Also, make sure you don't have any A records in your CloudFlare DNS that might c
 </p>
 
 ## DEPLOYMENT STEPS
+
+Deployment is fairly straight forward.
+
+Make sure that you are in the same region that you created your SSM secure sting parameters and click the **Launch Stack** button below:
+
+[![Launch CloudFormation Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png
+)](https://console.aws.amazon.com/cloudformation/home#/stacks/new?stackName=openvpnas-cf-letsencrypt&templateURL=https://s3-us-west-2.amazonaws.com/github-automated-openvpnas-cloudflare-letsencrypt/automated-openvpnas-cloudflare-letsencrypt.yml)
