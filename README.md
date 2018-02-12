@@ -64,6 +64,7 @@ Make sure that you are in the same region that you created your SSM secure sting
 [![Launch CloudFormation Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png
 )](https://console.aws.amazon.com/cloudformation/home#/stacks/new?stackName=openvpnas-cf-letsencrypt&templateURL=https://s3-us-west-2.amazonaws.com/github-automated-openvpnas-cloudflare-letsencrypt/automated-openvpnas-cloudflare-letsencrypt.yml)
 
+Enter the references to the SSM secure strings for your private CloudFlare account API data. Make sure that you don't mix up the Global API Key and Zone ID fields as it will fail and not create an A record in CloudFlare that points to your AWS EIP. When that happens, Let's Encrypt won't be able to resolve your FQDN and the certificate generation will fail.
 
 <p align="center">
 <img src="https://github.com/virtualjj/automated-openvpnas-cloudflare-letsencrypt/blob/master/images/readme/deploy-enter-ssm-params-cf-email.jpg" alt="Enter SSM secure string parameters and CloudFlare account email." height="75%" width="75%">
@@ -81,6 +82,9 @@ Enter a source IP address for connecting to the OpenVPN AS web UI. You can leave
 
 Enter a unique username for the web UI administrator account and a reference to the other SSM secure string for the secure password.
 
+Click **Next** and follow the prompts to deploy the stack.
 <p align="center">
 <img src="https://github.com/virtualjj/automated-openvpnas-cloudflare-letsencrypt/blob/master/images/readme/deploy-lock-ip-secure-string-passwd.jpg" alt="Enter a source IP for connecting to the OpenVPN AS web UI and choose a unique username as well as a SSM secure string for the admin password."="75%" width="75%">
 </p>
+
+The stack, instance, CloudFlare DNS update, and Let's Encrypt certificate should be complete in about five minutes.
