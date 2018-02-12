@@ -27,7 +27,7 @@ Though I've tried to standardize as much as possible, this template will not mee
 
 While it's cool that you can deploy a Let's Encrypt TLS certificate for free, this does not equate to more or better security. This project is the result of a question - can I automate the deployment of OpenVPN AS and Let's Encrypt with CloudFlare? Steps have been taken to improve security by integrating EC2 SSM for secrets management for example, but if you require strong security in an hostile environment, this project is not for you.
 
-Ideally, we'd use CloudFlare to protect the web admin UI since it is not possible to turn on MFA like you can on regular user accounts. Currently, after whitelisting the CloudFlare IPs, turning on CloudFlare protection breaks the web admin UI login. From a security perspective however, port 1194 UDP is open for the openvpn connections and cannot be proxied through CloudFlare anyway so the benefit of having CloudFlare protection is debatable. Using security groups to lock access from a source IP to the web admin UI *and* using a strong and unique username/password combination should be enough to mitigate most bots trying access the web admin console. VPC Flow Logging is enabled so feel free to see what is trying to access your OpenVPN AS instance.
+Ideally, we'd use CloudFlare to protect the web admin UI since it is not possible to turn on MFA like you can on regular user accounts. Currently, after whitelisting the CloudFlare IPs, turning on CloudFlare protection breaks the web admin UI login. From a security perspective however, port 1194 UDP is open for the openvpn connections and cannot be proxied through CloudFlare anyway so the security benefit of having CloudFlare protection is debatable. Using security groups to lock access from a source IP to the web admin UI *and* using a strong and unique username/password combination should be enough to mitigate most bots trying access the web admin console. VPC Flow Logging is enabled so feel free to see what is trying to access your OpenVPN AS instance.
 
 ## PREREQUISITES
 
@@ -41,7 +41,8 @@ In AWS, setup the following secure strings in AWS SSM Parameter store:
 * CloudFlare Zone ID for the target domain
 * Password for the OpenVPN AS Web Admin UI administrator user
 
-Make sure to select **Secure String** when you create one:
+Make sure to select **Secure String** when you create one. The default AWS SSM KMS key is sufficient as all we are tying to do is prevent passing secrets in plaintext using EC2 userdata:
+
 <p align="center">
 <img src="https://github.com/virtualjj/automated-openvpnas-cloudflare-letsencrypt/blob/master/images/readme/prep-creating-secure-string.jpg" alt="Creating an EC2 SSM secure string example." height="75%" width="75%">
 </p>
